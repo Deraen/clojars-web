@@ -9,6 +9,7 @@
                   [org.apache.httpcomponents/httpcore]]
                  [s3-wagon-private "1.0.0"]
                  [metosin/compojure-api "0.20.0"]
+                 [metosin/ring-http-response "0.6.1"]
                  ; Friend brings in old version
                  [org.clojure/core.cache "0.6.4"]
                  ; Clj-pgp depends on old version but potemkin requires a new version
