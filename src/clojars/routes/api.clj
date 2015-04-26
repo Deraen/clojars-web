@@ -1,6 +1,6 @@
 (ns clojars.routes.api
   (:require [clojure.set :refer [rename-keys]]
-            [compojure.core :refer [GET ANY defroutes context]]
+            [compojure.api.sweet :refer :all]
             [compojure.route :refer [not-found]]
             [clojars.db :as db]
             [clojars.web.common :as common]
@@ -48,9 +48,12 @@
              [groupname]]
               :results))
 
-(defroutes routes
+(defapi api-routes
+  (swagger-ui "/api-docs")
+  (swagger-docs
+    {:info {:title "Clojars API"}})
   (context "/api" []
-    (GET ["/groups/:group-id", :group-id #"[^/]+"] [group-id]
+    (GET* ["/groups/:group-id", :group-id #"[^/]+"] [group-id]
       (let [stats (stats/all)]
         (-> (jars-by-groupname group-id)
             (->> (map (fn [jar]
@@ -59,12 +62,12 @@
                             (dissoc :id :created :promoted_at)
                             (assoc :downloads (stats/download-count stats group-id (:jar_name jar)))))))
             json/generate-string)))
-    (GET ["/artifacts/:artifact-id", :artifact-id #"[^/]+"] [artifact-id]
+    (GET* ["/artifacts/:artifact-id", :artifact-id #"[^/]+"] [artifact-id]
       (get-artifact artifact-id artifact-id))
-    (GET ["/artifacts/:group-id/:artifact-id", :group-id #"[^/]+", :artifact-id #"[^/]+"] [group-id artifact-id]
+    (GET* ["/artifacts/:group-id/:artifact-id", :group-id #"[^/]+", :artifact-id #"[^/]+"] [group-id artifact-id]
       (get-artifact group-id artifact-id))
-    (GET "/users/:username" [username]
+    (GET* "/users/:username" [username]
       (-> {:groups (db/find-groupnames username)}
           json/generate-string))
-    (ANY "*" _
+    (ANY* "*" _
       (not-found nil))))

@@ -52,7 +52,7 @@
   ;; user routes must go after artifact routes
   ;; since they both catch /:identifier
   user/routes
-  api/routes
+  api/api-routes
   (GET "/error" _ (throw (Exception. "What!? You really want an error?")))
   (PUT "*" _ {:status 405 :headers {} :body "Did you mean to use /repo?"})
   (ANY "*" _
